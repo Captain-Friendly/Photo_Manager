@@ -1,0 +1,18 @@
+﻿@model UsersManager.Models.Photo
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit</h2>
+
+
+@{ Html.RenderPartial("PhotoForm");}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/imageUploader")
+    @Scripts.Render("~/bundles/ratings")
+}

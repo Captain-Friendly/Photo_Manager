@@ -1,0 +1,41 @@
+﻿@model IEnumerable<UsersManager.Models.Photo>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<div>@Helper.GlyphiconAction("Create", "glyphicon-plus", "Ajout d'image")</div>
+<div class="photosContainer" id="photosContainer">
+    @*@{ Html.RenderAction("GetPhotos", new { forceRefresh = true });}*@
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/ratings")
+    @Scripts.Render("~/bundles/partialRefresh")
+<script defer>
+        let partialRefresh =
+        new PartialRefresh("@Url.Action("GetPhotos")", "photosContainer", 5, PostRefreshTasks);
+
+        function PostRefreshTasks() {
+            InstallRating();
+            $("#SearchInput").click(function () {
+                partialRefresh.pause();
+            });
+            $("#SearchKeywords").click(function () {
+                let keywords = $("#SearchInput").val();
+                let url =
+                @Url.Action("/") + "SetSearchKeywords?keywords="+ keywords;
+                partialRefresh.command(url);
+                partialRefresh.restart();
+            })
+
+            $(".sortRatings").click(function () {
+                $(".sortRatings").css("color", "black");
+                let url = @Url.Action("/") + "SortRatingsBy?fieldToSort=" + $(this).attr("fieldToSort");
+                partialRefresh.command(url);
+            });
+        }
+</script>
+}

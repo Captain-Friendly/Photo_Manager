@@ -1,0 +1,118 @@
+﻿@model IEnumerable<UsersManager.Models.Photo>
+
+@{
+    string sortDatesIconColor = ((string)Session["RatingFieldToSort"] == "dates" ? "blue" : "black");
+    string sortUsersIconColor = ((string)Session["RatingFieldToSort"] == "users" ? "blue" : "black");
+    string sortRatingsIconColor = ((string)Session["RatingFieldToSort"] == "ratings" ? "blue" : "black");
+}
+<div>
+    <hr />
+    <div>
+        <input type="text" id="SearchInput" />
+        <span class="glyphicon glyphiconStyle glyphicon glyphicon-search pointer" id="SearchKeywords" title="Chercher par mots"></span>
+    </div>
+    <hr />
+    <div id="commandSection" style="display:grid; grid-template-columns: 30px 30px 30px">
+        <span id="sortDates" fieldToSort="dates" style="color:@sortDatesIconColor"
+              class="sortRatings glyphicon glyphiconStyle glyphicon-calendar pointer" title="Trier par dates d'évaluation" style=""></span>
+        <span id="sortUsers" fieldToSort="users" style="color:@sortUsersIconColor"
+              class="sortRatings glyphicon glyphiconStyle glyphicon-user pointer" title="Trier noms d’usager" style=""></span>
+        <span id="sortRatings" fieldToSort="ratings" style="color:@sortRatingsIconColor"
+              class="sortRatings glyphicon glyphiconStyle glyphicon-star pointer" title="Trier par évaluations" style=""></span>
+    </div>
+    <hr />
+    <div class="photosContainerGrid">
+
+
+        @{
+
+            IEnumerable<UsersManager.Models.Photo> photosSorted = null;
+            switch ((string)Session["RatingFieldToSort"])
+            {
+                case "dates":
+                    if ((bool)Session["RatingFieldSortDir"])
+                    {
+                        photosSorted = Model.OrderBy(ph => ph.CreationDate);
+                    }
+                    else
+                    {
+                        photosSorted = Model.OrderByDescending(pr => pr.CreationDate);
+                    }
+                    break;
+                case "users":
+                    if ((bool)Session["RatingFieldSortDir"])
+                    {
+                        photosSorted = Model.OrderBy(pr => pr.User.FirstName);
+                    }
+                    else
+                    {
+                        photosSorted = Model.OrderByDescending(pr => pr.User.FirstName).ThenByDescending(pr => pr.User.LastName);
+                    }
+                    break;
+                case "ratings":
+                    if ((bool)Session["RatingFieldSortDir"])
+                    {
+                        photosSorted = Model.OrderBy(pr => pr.Ratings);
+                    }
+                    else
+                    {
+                        photosSorted = Model.OrderByDescending(pr => pr.Ratings);
+                    }
+                    break;
+                default: break;
+            }
+
+            IEnumerable<UsersManager.Models.FriendShipState> friendships = ViewBag.FriendShipState;
+            foreach (var photo in photosSorted)
+            {
+                if (!photo.User.Blocked)
+                {
+                    switch (photo.PhotoVisibility.Id)
+                    {
+                        case 1:
+                            <div class="photoContainer">
+                                @Helper.Photo(photo)
+                            </div>
+                            break;
+
+                        case 2:
+                            if (photo.UserId == ViewBag.CurrentUserId)
+                            {
+                                <div class="photoContainer">
+                                    @Helper.Photo(photo)
+                                </div>
+                            }
+                            else
+                            {
+                                foreach (UsersManager.Models.FriendShipState friendship in friendships)
+                                {
+                                    if (friendship.TargetUser.Id == photo.UserId)
+                                    {
+                                        if (friendship.Status == 1)
+                                        {
+                                            <div class="photoContainer" style="display:grid; grid-template-columns:150px auto">
+                                                @Helper.Photo(photo)
+                                            </div>
+                                        }
+                                    }
+                                }
+
+                            }
+                            break;
+                        case 3:
+                            if (ViewBag.CurrentUserId == photo.UserId)
+                            {
+                                <div class="photoContainer">
+                                    @Helper.Photo(photo)
+                                </div>
+                            }
+                            break;
+                        default: break;
+
+                    }
+                }
+            }
+        }
+    </div>
+</div>
+

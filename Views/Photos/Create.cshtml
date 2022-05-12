@@ -1,0 +1,17 @@
+﻿@model UsersManager.Models.Photo
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<h2>Create</h2>
+
+@{ Html.RenderPartial("PhotoForm");}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/imageUploader")
+    @Scripts.Render("~/bundles/ratings")
+}
